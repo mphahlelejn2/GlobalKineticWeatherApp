@@ -1,14 +1,15 @@
 package com.kamo.globalkineticweatherapp.data
 
 import com.kamo.globalkineticweatherapp.data.model.WeatherForecast
+import com.kamo.globalkineticweatherapp.gps.GpsCoordinates
 import kotlinx.coroutines.flow.Flow
 
 interface Repository {
-    suspend fun getWeatherForecastByLatAndLong(
-        apiKey: String,
-        lat: Double,
-        long: Double
-    ): Result<WeatherForecast>
 
-    suspend fun getLocalWeatherForecast(): Result<WeatherForecast>
+    fun refreshWeatherForecast(
+        apiKey: String,
+        gpsCoordinates: GpsCoordinates
+    ): Flow<Result<WeatherForecast>>
+
+    fun getOffLineWeatherForecast(): Flow<Result<WeatherForecast>>
 }

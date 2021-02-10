@@ -1,5 +1,6 @@
 package com.kamo.globalkineticweatherapp.common
 import android.app.Application
+import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.kamo.globalkineticweatherapp.data.Repository
@@ -9,11 +10,11 @@ import com.kamo.globalkineticweatherapp.data.local.LocalDataSourceImpl
 import com.kamo.globalkineticweatherapp.data.remote.ApiService
 import com.kamo.globalkineticweatherapp.data.remote.RemoteDataSource
 import com.kamo.globalkineticweatherapp.data.remote.RemoteRemoteDataSourceImpl
+import com.kamo.globalkineticweatherapp.gps.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
-import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -25,6 +26,14 @@ import javax.inject.Singleton
 @InstallIn(ApplicationComponent::class)
 object InjectorUtils{
 
+    @Singleton
+    @Provides
+    fun provideIGPSLocation(context: Application): IGPSLocation = FusedLocation(context)
+
+    @Singleton
+    @Provides
+    fun provideLocalDataSource(context: Application): LocalDataSource = LocalDataSourceImpl(context)
+
     @Provides
     fun provideApiService(retrofit: Retrofit): ApiService =retrofit.create(ApiService::class.java)
 
@@ -34,8 +43,8 @@ object InjectorUtils{
 
     @Singleton
     @Provides
-    fun provideRepository(localDataSource: LocalDataSource, remoteDataSource: RemoteDataSource,coroutineDispatcher: CoroutineDispatcher): Repository =
-        RepositoryImpl(localDataSource, remoteDataSource,coroutineDispatcher)
+    fun provideRepository(localDataSource: LocalDataSource, remoteDataSource: RemoteDataSource): Repository =
+        RepositoryImpl(localDataSource, remoteDataSource)
 
     @Singleton
     @Provides
